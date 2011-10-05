@@ -6,6 +6,7 @@ import os, subprocess
 import inspect
 from webassets.exceptions import FilterError
 from webassets.importlib import import_module
+import collections
 
 
 __all__ = ('Filter', 'CallableFilter', 'get_filter', 'register_filter',)
@@ -33,7 +34,7 @@ class NameGeneratingMeta(type):
         return type.__new__(cls, name, bases, attrs)
 
 
-class Filter(object):
+class Filter(object, metaclass=NameGeneratingMeta):
     """Base class for a filter.
 
     Subclasses should allow the creation of an instance without any
@@ -41,8 +42,6 @@ class Filter(object):
     filter can be specified by name only. In fact, the taking of
     arguments will normally be the exception.
     """
-
-    __metaclass__ = NameGeneratingMeta
 
     # Name by which this filter can be referred to. Will be generated
     # automatically for subclasses if not explicitly given.
@@ -237,14 +236,14 @@ def get_filter(f, *args, **kwargs):
         # Don't need to do anything.
         assert not args and not kwargs
         return f
-    elif isinstance(f, basestring):
+    elif isinstance(f, str):
         if f in _FILTERS:
             klass = _FILTERS[f]
         else:
             raise ValueError('No filter \'%s\'' % f)
     elif inspect.isclass(f) and issubclass(f, Filter):
         klass = f
-    elif callable(f):
+    elif isinstance(f, collections.Callable):
         assert not args and not kwargs
         return CallableFilter(f)
     else:
@@ -269,7 +268,7 @@ def load_builtin_filters():
         module_name = 'webassets.filter.%s' % name
         try:
             module = import_module(module_name)
-        except Exception, e:
+        except Exception as e:
             warnings.warn('Error while loading builtin filter '
                           'module \'%s\': %s' % (module_name, e))
         else:

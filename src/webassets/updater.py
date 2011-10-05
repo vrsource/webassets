@@ -127,7 +127,7 @@ class TimestampUpdater(BundleDefUpdater):
     id = 'timestamp'
 
     def check_timestamps(self, bundle, env, o_modified=None):
-        from bundle import Bundle, is_url
+        from .bundle import Bundle, is_url
 
         if not o_modified:
             o_modified = os.stat(env.abspath(bundle.output)).st_mtime
@@ -136,7 +136,7 @@ class TimestampUpdater(BundleDefUpdater):
         # the bundle source files, as well as any additional
         # dependencies that we are supposed to watch.
         for iterator, result in (
-            (lambda e: map(lambda s: s[1], bundle.resolve_contents(e)), True),
+            (lambda e: [s[1] for s in bundle.resolve_contents(e)], True),
             (bundle.resolve_depends, SKIP_CACHE)
         ):
             for item in iterator(env):

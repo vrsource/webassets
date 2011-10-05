@@ -51,8 +51,8 @@ class TempDirHelper:
         """
         # Allow passing a list of filenames to create empty files
         if not hasattr(files, 'items'):
-            files = dict(map(lambda n: (n, ''), files))
-        for name, data in files.items():
+            files = dict([(n, '') for n in files])
+        for name, data in list(files.items()):
             dirs = path.dirname(self.path(name))
             if not path.exists(dirs):
                 os.makedirs(dirs)
@@ -94,7 +94,7 @@ class TempDirHelper:
         will automatically be used. Returns the mtime used.
         """
         mtime = kwargs.pop('mtime', time.time())
-        assert not kwargs, "Unsupported kwargs: %s" %  ', '.join(kwargs.keys())
+        assert not kwargs, "Unsupported kwargs: %s" %  ', '.join(list(kwargs.keys()))
         for f in files:
             os.utime(self.path(f), (mtime, mtime))
         return mtime
@@ -104,10 +104,10 @@ class TempDirHelper:
         for some quick debugging.
         """
         for f in files:
-            print f
-            print "-" * len(f)
-            print self.get(f)
-            print
+            print(f)
+            print("-" * len(f))
+            print(self.get(f))
+            print()
 
 
 class TempEnvironmentHelper(TempDirHelper):

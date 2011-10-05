@@ -119,7 +119,7 @@ class TestSpecialProperties:
 
         # Standard string values
         self.m.updater = 'always'
-        assert isinstance(self.m.config['updater'], basestring)
+        assert isinstance(self.m.config['updater'], str)
         assert isinstance(self.m.updater, BaseUpdater)
         assert self.m.updater == 'always'   # __eq__
         assert self.m.updater != 'timestamp'

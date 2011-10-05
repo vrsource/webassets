@@ -1,13 +1,13 @@
 import os
 import tempfile
-from StringIO import StringIO
+from io import StringIO
 from nose.tools import assert_raises, with_setup, assert_equals
 from nose import SkipTest
 from distutils.spawn import find_executable
 from webassets import Bundle, Environment
 from webassets.exceptions import FilterError
 from webassets.filter import Filter, get_filter, register_filter, JavaMixin
-from helpers import TempEnvironmentHelper
+from .helpers import TempEnvironmentHelper
 
 # Sometimes testing filter output can be hard if they generate
 # unpredictable text like temp paths or timestamps. doctest has
@@ -262,7 +262,7 @@ class TestBuiltinFilters(TempEnvironmentHelper):
         if not find_executable('uglifyjs'):
             raise SkipTest()
         self.mkbundle('foo.js', filters='uglifyjs', output='out.js').build()
-        print self.get('out.js')
+        print(self.get('out.js'))
         assert self.get('out.js') == "function foo(a){var b;document.write(a)}"
 
     def test_less(self):
@@ -406,7 +406,7 @@ class TestSass(TempEnvironmentHelper):
         sass = get_filter('sass', debug_info=False)
         self.create_files({'import-test.sass': '''@import foo.sass'''})
         self.mkbundle('import-test.sass', filters=sass, output='out.css').build()
-        print repr(self.get('out.css'))
+        print(repr(self.get('out.css')))
         assert doctest_match("""/* line 1, ...foo.sass */\nh1 {\n  font-family: "Verdana";\n  color: white;\n}\n""", self.get('out.css'))
 
     def test_scss(self):

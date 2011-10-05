@@ -1,7 +1,7 @@
-import os, re, urlparse
+import os, re, urllib.parse
 from os.path import join, normpath
 from webassets.utils import common_path_prefix
-import urlpath
+from . import urlpath
 try:
     from collections import OrderedDict
 except ImportError:
@@ -106,7 +106,7 @@ class CSSRewriteFilter(Filter):
         replace = False
         if self.replace not in (False, None):
             replace = OrderedDict()
-            for repldir, sub in self.replace.items():
+            for repldir, sub in list(self.replace.items()):
                 repldir = addsep(os.path.normpath(join(root, repldir)))
                 replurl = path2url(repldir[len(common_path_prefix([root, repldir])):])
                 replace[replurl] = sub
@@ -129,8 +129,8 @@ class CSSRewriteFilter(Filter):
 
             # Replace mode: manually adjust the location of files
             if replace is not False:
-                for to_replace, sub in replace.items():
-                    targeturl = urlparse.urljoin(source_url, url)
+                for to_replace, sub in list(replace.items()):
+                    targeturl = urllib.parse.urljoin(source_url, url)
                     if targeturl.startswith(to_replace):
                         url = "%s%s" % (sub, targeturl[len(to_replace):])
                         # Only apply the first match
@@ -143,7 +143,7 @@ class CSSRewriteFilter(Filter):
                     # rewritten url: relative path from new location (output)
                     # to location of referenced file (source + current url)
                     url = urlpath.relpath(output_url,
-                                          urlparse.urljoin(source_url, url))
+                                          urllib.parse.urljoin(source_url, url))
 
             result = 'url(%s%s%s%s%s)' % (
                         text_before, quotes_used, url, quotes_used, text_after)

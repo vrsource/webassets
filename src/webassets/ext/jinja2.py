@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import warnings
 import jinja2
@@ -96,7 +96,7 @@ class AssetsExtension(Extension):
             raise RuntimeError('No assets environment configured in '+
                                'Jinja2 environment')
 
-        result = u""
+        result = ""
         urls = self.BundleClass(*self.resolve_contents(files, env),
                                 **{'output': output,
                                    'filters': filter}).urls(env=env)
@@ -133,7 +133,7 @@ class Jinja2Loader(GlobLoader):
         for i, env in enumerate(self.jinja2_envs):
             try:
                 t = env.parse(contents.decode(self.charset))
-            except jinja2.exceptions.TemplateSyntaxError, e:
+            except jinja2.exceptions.TemplateSyntaxError as e:
                 #print ('jinja parser (env %d) failed: %s'% (i, e))
                 pass
             else:

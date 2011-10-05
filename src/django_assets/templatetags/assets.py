@@ -30,7 +30,7 @@ class AssetsNode(template.Node):
             else:
                 try:
                     return template.Variable(x).resolve(context)
-                except template.VariableDoesNotExist, e:
+                except template.VariableDoesNotExist as e:
                     # Django seems to hide those; we don't want to expose
                     # them either, I guess.
                     raise
@@ -50,7 +50,7 @@ class AssetsNode(template.Node):
     def render(self, context):
         bundle = self.resolve(context)
 
-        result = u""
+        result = ""
         for url in bundle.urls(env=get_env()):
             context.update({'ASSET_URL': url})
             try:

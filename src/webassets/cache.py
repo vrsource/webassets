@@ -16,7 +16,7 @@ also serve in other places.
 import os
 from os import path
 
-from filter import Filter
+from .filter import Filter
 
 
 __all__ = ('FilesystemCache', 'MemoryCache', 'get_cache',)

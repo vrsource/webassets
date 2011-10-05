@@ -1,7 +1,7 @@
 import sys
 from nose.tools import assert_raises
 import textwrap
-from StringIO import StringIO
+from io import StringIO
 from webassets.loaders import PythonLoader, YAMLLoader, LoaderError
 from nose import SkipTest
 

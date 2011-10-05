@@ -2,7 +2,7 @@ import tempfile, shutil
 from nose.tools import assert_equals
 from webassets import Bundle, Environment
 from webassets.cache import BaseCache, FilesystemCache, MemoryCache
-from helpers import TempEnvironmentHelper
+from .helpers import TempEnvironmentHelper
 
 
 class TestCaches:

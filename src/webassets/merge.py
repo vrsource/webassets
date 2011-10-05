@@ -2,11 +2,11 @@
 """
 
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 try:
-    import cStringIO as StringIO
+    import io as StringIO
 except:
-    import StringIO
+    import io
 
 
 import sys
@@ -68,7 +68,7 @@ class UrlHunk(BaseHunk):
 
     def data(self):
         if not hasattr(self, '_data'):
-            r = urllib2.urlopen(self.url)
+            r = urllib.request.urlopen(self.url)
             try:
                 self._data = r.read()
             finally:
@@ -142,11 +142,11 @@ def apply_filters(hunk, filters, type, cache=None, no_cache_read=False,
     if hasattr(hunk, 'filename'):
         kwargs.setdefault('source_path', hunk.filename)
 
-    data = StringIO.StringIO(hunk.data())
+    data = io.StringIO(hunk.data())
     for filter in filters:
         func = getattr(filter, type, False)
         if func:
-            out = StringIO.StringIO()
+            out = io.StringIO()
             func(data, out, **kwargs)
             data = out
             data.seek(0)

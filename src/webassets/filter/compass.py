@@ -109,7 +109,7 @@ class CompassFilter(Filter):
 
         tempout = tempfile.mkdtemp()
         # Temporarily move to "tempout", so .sass-cache will be created there
-        old_wd = os.getcwdu()
+        old_wd = os.getcwd()
         os.chdir(tempout)
         try:
             # Make sure to use normpath() to not cause trouble with

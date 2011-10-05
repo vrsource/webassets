@@ -1,9 +1,9 @@
 from os import path
-import urlparse
+import urllib.parse
 from itertools import chain
-from bundle import Bundle
-from cache import get_cache
-from updater import get_updater
+from .bundle import Bundle
+from .cache import get_cache
+from .updater import get_updater
 
 
 __all__ = ('Environment', 'RegisterError')
@@ -86,7 +86,7 @@ class BaseEnvironment(object):
         self.config.update(config)
 
     def __iter__(self):
-        return chain(self._named_bundles.itervalues(), self._anon_bundles)
+        return chain(iter(self._named_bundles.values()), self._anon_bundles)
 
     def __getitem__(self, name):
         return self._named_bundles[name]
@@ -279,7 +279,7 @@ class BaseEnvironment(object):
         """
         root = self.url
         root += root[-1:] != '/' and '/' or ''
-        return urlparse.urljoin(root, fragment)
+        return urllib.parse.urljoin(root, fragment)
 
     def abspath(self, filename):
         """Create an absolute path based on the directory.

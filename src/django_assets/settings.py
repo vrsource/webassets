@@ -17,7 +17,7 @@ class docwrap(object):
             # so that the reST will be formatted correctly.
             last_line = self.__doc__.splitlines()[-1]
             indent = last_line[-len(last_line.lstrip()):]
-            append = "\n".join(map(lambda s: indent+s, append.splitlines()))
+            append = "\n".join([indent+s for s in append.splitlines()])
             self.__doc__ += append
 
 

@@ -7,7 +7,7 @@ This can be used as an alternative to an imperative setup.
 import os, sys
 from os import path
 import glob, fnmatch
-import importlib
+from . import importlib
 try:
     import yaml
 except ImportError:
@@ -43,11 +43,11 @@ class YAMLLoader(object):
 
     def _get_bundles(self, obj):
         bundles = {}
-        for key, data in obj.iteritems():
+        for key, data in obj.items():
             if data is None:
                 data = {}
             contents = data.get('contents', [])
-            if isinstance(contents, basestring):
+            if isinstance(contents, str):
                 contents = [contents]
             bundles[key] = Bundle(
                 filters=data.get('filters', None),
@@ -61,7 +61,7 @@ class YAMLLoader(object):
 
         The filename can be False if it is unknown.
         """
-        if isinstance(self.file_or_filename, basestring):
+        if isinstance(self.file_or_filename, str):
             return open(self.file_or_filename), self.file_or_filename
 
         file = self.file_or_filename
@@ -128,7 +128,7 @@ class YAMLLoader(object):
 
             # load bundles
             bundles = self._get_bundles(obj.get('bundles', {}))
-            for name, bundle in bundles.iteritems():
+            for name, bundle in bundles.items():
                 env.register(name, bundle)
 
             return env
@@ -146,7 +146,7 @@ class PythonLoader(object):
         try:
             try:
                 self.module = import_module(module_name)
-            except ImportError, e:
+            except ImportError as e:
                 raise LoaderError(e)
         finally:
             sys.path.pop(0)
@@ -170,7 +170,7 @@ class PythonLoader(object):
         """
         try:
             return getattr(self.module, 'environment')
-        except AttributeError, e:
+        except AttributeError as e:
             raise LoaderError(e)
 
 

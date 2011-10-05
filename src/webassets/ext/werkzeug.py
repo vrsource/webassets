@@ -23,8 +23,8 @@ def make_assets_action(environment, loaders=[]):
 
     def action(rebuild=False, watch=False, check=False, clean=False,
                quiet=('q', False), verbose=('v', False)):
-        if len(filter(bool, [rebuild, watch, clean, check])) != 1:
-            print "Error: exactly one of --rebuild, --watch, --check or --clean must be given"
+        if len(list(filter(bool, [rebuild, watch, clean, check]))) != 1:
+            print("Error: exactly one of --rebuild, --watch, --check or --clean must be given")
             return 1
 
         if rebuild:

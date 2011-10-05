@@ -1,6 +1,6 @@
 import os
-import urllib2
-from StringIO import StringIO
+import urllib.request, urllib.error, urllib.parse
+from io import StringIO
 
 from nose.tools import assert_raises, assert_equals
 from nose import SkipTest
@@ -11,7 +11,7 @@ from webassets.filter import Filter
 from webassets.updater import TimestampUpdater, BaseUpdater, SKIP_CACHE
 from webassets.cache import MemoryCache
 
-from helpers import TempEnvironmentHelper, noop
+from .helpers import TempEnvironmentHelper, noop
 
 
 class TestBundleConfig(TempEnvironmentHelper):
@@ -23,7 +23,7 @@ class TestBundleConfig(TempEnvironmentHelper):
         """
         try:
             Bundle(yaddayada=True)
-        except TypeError, e:
+        except TypeError as e:
             assert "unexpected keyword argument" in ("%s" % e)
         else:
             raise Exception('Expected TypeError not raised')
@@ -835,7 +835,7 @@ class TestGlobbing(TempEnvironmentHelper):
         #https://github.com/miracle2k/python-glob2
 
 
-class MockHTTPHandler(urllib2.HTTPHandler):
+class MockHTTPHandler(urllib.request.HTTPHandler):
 
     def __init__(self, urls={}):
         self.urls = urls
@@ -861,9 +861,9 @@ class TestUrlContents(TempEnvironmentHelper):
 
     def setup(self):
         TempEnvironmentHelper.setup(self)
-        mock_opener = urllib2.build_opener(MockHTTPHandler({
+        mock_opener = urllib.request.build_opener(MockHTTPHandler({
             'http://foo': 'function() {}'}))
-        urllib2.install_opener(mock_opener)
+        urllib.request.install_opener(mock_opener)
 
     def test_valid_url(self):
         self.mkbundle('http://foo', output='out').build()

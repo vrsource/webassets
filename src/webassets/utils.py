@@ -15,5 +15,5 @@ def common_path_prefix(paths, sep=os.path.sep):
     """
     def allnamesequal(name):
         return all(n==name[0] for n in name[1:])
-    bydirectorylevels = zip(*[p.split(sep) for p in paths])
+    bydirectorylevels = list(zip(*[p.split(sep) for p in paths]))
     return sep.join(x[0] for x in takewhile(allnamesequal, bydirectorylevels))

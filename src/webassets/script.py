@@ -32,7 +32,7 @@ class CommandLineEnvironment():
         """
         try:
             function = self.Commands[command]
-        except KeyError, e:
+        except KeyError as e:
             raise CommandError('unknown command: %s' % e)
         else:
             return function(self)
@@ -49,7 +49,7 @@ class CommandLineEnvironment():
             self.log.info("Building bundle: %s" % to_build.output)
             try:
                 to_build.build(force=True)
-            except BuildError, e:
+            except BuildError as e:
                     self.log.error("Failed, error was: %s" % e)
 
     def watch(self):
@@ -83,8 +83,8 @@ class CommandLineEnvironment():
                     self.log.info("Rebuilding asset: %s" % bundle.output)
                     try:
                         bundle.build(force=True)
-                    except BuildError, e:
-                        print "Failed: %s" % e
+                    except BuildError as e:
+                        print("Failed: %s" % e)
                 time.sleep(0.1)
         except KeyboardInterrupt:
             pass
@@ -163,15 +163,15 @@ def main(argv, env=None):
         env = PythonLoader(options.module).load_environment()
 
     if env is None:
-        print "Error: No environment given or found. Maybe use -m?"
+        print("Error: No environment given or found. Maybe use -m?")
         return 1
 
     # Run the selected command
     cmd = CommandLineEnvironment(env, log)
     try:
         return cmd.invoke(args[0])
-    except CommandError, e:
-        print e
+    except CommandError as e:
+        print(e)
         return 1
 
 

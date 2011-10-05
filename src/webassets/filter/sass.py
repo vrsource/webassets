@@ -115,7 +115,7 @@ class SassFilter(Filter):
                                    'stdout=%s, returncode=%s') % (
                                                 stderr, stdout, proc.returncode))
             elif stderr:
-                print "sass filter has warnings:", stderr
+                print("sass filter has warnings:", stderr)
 
             out.write(stdout)
         finally:

@@ -4,7 +4,7 @@ from webassets import Environment, Bundle
 from webassets.exceptions import BundleError
 from webassets.updater import TimestampUpdater, BundleDefUpdater, SKIP_CACHE
 from webassets.cache import MemoryCache
-from helpers import TempEnvironmentHelper
+from .helpers import TempEnvironmentHelper
 
 
 class TestBundleDefBaseUpdater:

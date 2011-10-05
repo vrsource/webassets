@@ -1,5 +1,6 @@
 from os import path
-import urlparse
+import urllib.parse
+from functools import reduce
 try:
     # Current version of glob2 does not let us access has_magic :/
     import glob2 as glob
@@ -8,18 +9,18 @@ except ImportError:
     import glob
     from glob import has_magic
 import warnings
-from filter import get_filter
-from merge import (FileHunk, MemoryHunk, UrlHunk, apply_filters, merge,
+from .filter import get_filter
+from .merge import (FileHunk, MemoryHunk, UrlHunk, apply_filters, merge,
                    make_url, merge_filters)
-from updater import SKIP_CACHE
-from exceptions import BundleError, BuildError
+from .updater import SKIP_CACHE
+from .exceptions import BundleError, BuildError
 
 
 __all__ = ('Bundle', 'get_all_bundle_files',)
 
 
 def is_url(s):
-    return bool(urlparse.urlsplit(s).scheme)
+    return bool(urllib.parse.urlsplit(s).scheme)
 
 
 class Bundle(object):
@@ -53,7 +54,7 @@ class Bundle(object):
         self.depends = options.pop('depends', [])
         if options:
             raise TypeError("got unexpected keyword argument '%s'" %
-                            options.keys()[0])
+                            list(options.keys())[0])
         self.extra_data = {}
 
     def __repr__(self):
@@ -74,8 +75,8 @@ class Bundle(object):
             self._filters = ()
             return
 
-        if isinstance(value, basestring):
-            filters = map(unicode.strip, unicode(value).split(','))
+        if isinstance(value, str):
+            filters = list(map(str.strip, str(value).split(',')))
         elif isinstance(value, (list, tuple)):
             filters = value
         else:
@@ -123,7 +124,7 @@ class Bundle(object):
         if getattr(self, '_resolved_contents', None) is None or force:
             l = []
             for item in self.contents:
-                if isinstance(item, basestring):
+                if isinstance(item, str):
                     if is_url(item):
                         # Is a URL
                         l.append((item, item))
@@ -137,7 +138,7 @@ class Bundle(object):
                         # _normalize_source_path().
                         try:
                             l.append((item, env._normalize_source_path(item)))
-                        except IOError, e:
+                        except IOError as e:
                             raise BundleError(e)
                 else:
                     # Is probably a nested Bundle
@@ -148,7 +149,7 @@ class Bundle(object):
     def _get_depends(self):
         return self._depends
     def _set_depends(self, value):
-        self._depends = [value] if isinstance(value, basestring) else value
+        self._depends = [value] if isinstance(value, str) else value
         self._resolved_depends = None
     depends = property(_get_depends, _set_depends, doc=
     """Allows you to define an additional set of files (glob syntax
@@ -170,7 +171,7 @@ class Bundle(object):
                 else:
                     try:
                         l.append(env._normalize_source_path(item))
-                    except IOError, e:
+                    except IOError as e:
                         raise BundleError(e)
             self._resolved_depends = l
         return self._resolved_depends
@@ -296,7 +297,7 @@ class Bundle(object):
         # Return all source hunks as one, with output filters applied
         try:
             final = merge(hunks)
-        except IOError, e:
+        except IOError as e:
             raise BuildError(e)
 
         if no_filters:

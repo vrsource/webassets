@@ -78,7 +78,7 @@ class Command(BaseCommand):
         cmd = CommandLineEnvironment(get_env(), log)
         try:
             cmd.invoke(args[0])
-        except AssetCommandError, e:
+        except AssetCommandError as e:
             raise CommandError(e)
 
     def load_from_templates(self):
