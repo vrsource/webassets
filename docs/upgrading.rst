@@ -10,6 +10,25 @@ incompatibility. The ``webassets`` API is not stable yet.
 In Development version
 ~~~~~~~~~~~~~~~~~~~~~~
 
+- **django-assets is no longer included!**
+  You need to install it's package separately. See the current
+  `development version <https://github.com/miracle2k/django-assets>`_.
+
+  .. warning::
+    When upgrading, you need to take extra care to rid yourself of the old
+    version of webassets before installing the separate ``django-assets``
+    package. This is to avoid that Python still finds the old ``django_assets``
+    module that used to be included with ``webassets``.
+
+    In some cases, even ``pip uninstall webassets`` is not enough, and old
+    ``*.pyc`` files are kept around. I recommend that you delete your old
+    webassets install manually from the filesystem. To find out where it is
+    stored, open a Python shell and do::
+
+        >>> import webassets
+        >>> webassets
+        <module 'webassets' from '/usr/local/lib/python2.7/dist-packages/webassets/src/webassets/__init__.pyc'>
+
 - Some filters now run in debug mode. Specifically, there are two things that
   deserve mention:
 
@@ -92,6 +111,30 @@ In Development version
   :class:`CommandLineEnvironment` to override individual command methods like
   :meth:`CommandLineEnvironment.build`, you need to update your code.
 
+- The :class:`JavaMixin` helper class to implement Java-based filters has been
+  removed, and in it's stead there is now a :class:`JavaTool` base class that
+  can be used.
+
+- The code to resolve bundle contents has been refactored. As a result, the
+  behavior of the semi-internal method :meth:`Bundle.resolve_contents` has
+  changed slightly; in addition, the
+  :meth:`Environment._normalize_source_path` method used mainly by
+  extensions like ``Flask-Assets`` has been removed. Instead, extensions now
+  need to implement a custom :class:`Resolver`. The
+  :class:`Evironment.absurl` method has also disappeared, and replacing it
+  can now be done via a custom :class:`Resolver`` class.
+
+- :attr:`Environment.directory` now always returns an absolute path; if a
+  relative path is stored, it is based off on the current working directory.
+  This spares *a lot* of calls to ``os.abspath`` throughout the code. If you
+  need the original value you can always use
+  ``environment.config['directory']``.
+
+- If the ``JST_COMPILER`` option of the ``jst`` filter is set to ``False``
+  (as opposed to the default value, ``None``), the templates will now be
+  output as raw strings. Before, ``False`` behaved like ``None`` and used
+  the builtin compiler.
+
 
 In 0.7
 ~~~~~~
@@ -148,7 +191,7 @@ Other changes:
 - ``django_assets`` no longer tries to load a global ``assets.py`` module (it
   will still find bundles defined in application-level ``assets.py`` files). If
   you want to define bundles in other modules, you now need to list those
-  explicitly in the :ref:`ASSETS_MODULES <django-setting-modules>` setting.
+  explicitly in the :ref:`ASSETS_MODULES <django:django-setting-modules>` setting.
 
 In 0.6
 ~~~~~~
@@ -205,7 +248,7 @@ In 0.1
   setting this to ``True`` meant *enable the django-assets debugging mode*.
   However, ``django-assets`` now follows the default Django ``DEBUG``
   setting, and ``ASSETS_DEBUG`` should be understood as meaning *how to
-  behave when in debug mode*. See :ref:`ASSETS_DEBUG <django-setting-debug>`
+  behave when in debug mode*. See :ref:`ASSETS_DEBUG <django:django-setting-debug>`
   for more information.
 - ``ASSETS_AUTO_CREATE`` now causes an error to be thrown if due it it
   being disabled a file cannot be created. Previously, it caused

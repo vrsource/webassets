@@ -198,3 +198,14 @@ Other
 
 .. autoclass:: webassets.filter.gzip.GZip
 
+
+``jinja2``
+~~~~~~~~~~
+
+.. autoclass:: webassets.filter.jinja2.Jinja2
+
+
+``spritemapper``
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: webassets.filter.spritemapper.Spritemapper

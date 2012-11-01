@@ -1,5 +1,6 @@
 from __future__ import with_statement
 
+import os
 from nose.tools import assert_raises, with_setup
 
 from webassets import Environment
@@ -17,14 +18,21 @@ class TestEnvApi(object):
     def setup(self):
         self.m = Environment(None, None)
 
-    def test_single_bundle(self):
+    def test_register_single_bundle(self):
         """Test registering a single ``Bundle`` object.
         """
         b = Bundle()
         self.m.register('foo', b)
         assert self.m['foo'] == b
 
-    def test_new_bundle(self):
+    def test_register_dict(self):
+        """Register a bunch of bundles at once."""
+        a = Bundle(); b = Bundle()
+        self.m.register({'foo': a, 'bar': b})
+        assert self.m['foo'] == a
+        assert self.m['bar'] == b
+
+    def test_register_new_bundle(self):
         """Test self.m.registering a new bundle on the fly.
         """
 
@@ -41,13 +49,13 @@ class TestEnvApi(object):
         self.m.register('foofighters', b, output="bar")
         assert b in self.m['foofighters'].contents
 
-    def test_invalid_call(self):
+    def test_register_invalid_call(self):
         """Test calling self.m.register with an invalid syntax.
         """
         assert_raises(TypeError, self.m.register)
         assert_raises(TypeError, self.m.register, 'one-argument-only')
 
-    def test_duplicate(self):
+    def test_register_duplicate(self):
         """Test name clashes.
         """
 
@@ -65,7 +73,7 @@ class TestEnvApi(object):
         assert_raises(RegisterError, self.m.register, 'foo', b2)
         assert_raises(RegisterError, self.m.register, 'foo', 's1', 's2', 's3')
 
-    def test_anon_bundle(self):
+    def test_register_anon_bundle(self):
         """Self registering an anonymous bundle.
         """
         b = Bundle()
@@ -94,8 +102,22 @@ class TestEnvApi(object):
 
         # Test constructing the environment with values for url and directory
         env = Environment('foo', 'bar')
-        assert env.directory == 'foo'
         assert env.url == 'bar'
+        assert env.config['directory'] == 'foo'
+        assert env.directory == os.path.join(os.getcwd(), 'foo')
+
+    def test_append_load_path(self):
+        env = Environment()
+        assert env.load_path == []
+
+        env.append_path('foo', '/foo')
+        assert env.load_path == ['foo']
+        assert env.url_mapping == {'foo': '/foo'}
+
+        # Works without path
+        env.append_path('bar')
+        assert env.load_path == ['foo', 'bar']
+        assert env.url_mapping == {'foo': '/foo'}
 
 
 class TestEnvConfig(object):

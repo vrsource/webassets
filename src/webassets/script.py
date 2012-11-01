@@ -3,16 +3,6 @@ import os, sys
 import time
 import logging
 
-try:
-    set
-except NameError:
-    from sets import Set as set
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 from webassets.loaders import PythonLoader, YAMLLoader
 from webassets.bundle import get_all_bundle_files
 from webassets.exceptions import BuildError
@@ -20,6 +10,7 @@ from webassets.updater import TimestampUpdater
 from webassets.merge import MemoryHunk
 from webassets.version import get_manifest
 from webassets.cache import FilesystemCache
+from webassets.utils import set, StringIO
 
 
 __all__ = ('CommandError', 'CommandLineEnvironment', 'main')
@@ -138,7 +129,7 @@ class BuildCommand(Command):
         # Determine common prefix for use with ``directory`` option.
         if directory:
             prefix = os.path.commonprefix(
-                [os.path.normpath(self.environment.abspath(b.output))
+                [os.path.normpath(b.resolve_output(self.environment))
                  for _, b in bundles if b.output])
             # dirname() gives the right value for a single file.
             prefix = os.path.dirname(prefix)
@@ -158,8 +149,8 @@ class BuildCommand(Command):
             if output:
                 overwrite_filename = output[name]
             elif directory:
-                offset = os.path.normpath(self.environment.abspath(
-                    bundle.output))[len(prefix)+1:]
+                offset = os.path.normpath(
+                    bundle.resolve_output(self.environment))[len(prefix)+1:]
                 overwrite_filename = os.path.join(directory, offset)
             to_build.append((bundle, overwrite_filename, name,))
 
@@ -303,7 +294,7 @@ class CleanCommand(Command):
         for bundle in self.environment:
             if not bundle.output:
                 continue
-            file_path = self.environment.abspath(bundle.output)
+            file_path = bundle.resolve_output(self.environment)
             if os.path.exists(file_path):
                 os.unlink(file_path)
                 self.log.info("Deleted asset: %s" % bundle.output)

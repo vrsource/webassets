@@ -52,6 +52,10 @@ class BaseHunk(object):
     def data(self):
         raise NotImplementedError()
 
+    def save(self, filename):
+        with open(filename, 'wb') as f:
+            f.write(self.data())
+
 
 class FileHunk(BaseHunk):
     """Exposes a single file through as a hunk.
@@ -223,7 +227,7 @@ class FilterTool(object):
         log.debug('Need to run method "%s" of filters (%s) on hunk %s with '
                   'kwargs=%s', type, filters, hunk, kwargs)
 
-        filters = [f for f in filters if hasattr(f, type)]
+        filters = [f for f in filters if getattr(f, type, None)]
         if not filters:  # Short-circuit
             log.debug('No filters have "%s" methods, returning hunk '
                       'unchanged' % (type,))
@@ -276,7 +280,7 @@ class FilterTool(object):
         log.debug('Need to run method "%s" of one of the filters (%s) '
                   'with args=%s, kwargs=%s', type, filters, args, kwargs)
 
-        filters = [f for f in filters if hasattr(f, type)]
+        filters = [f for f in filters if getattr(f, type, None)]
         if not filters:  # Short-circuit
             log.debug('No filters have a "%s" method' % type)
             return None
